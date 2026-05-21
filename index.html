@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency UI Dashboard - Multi Theme</title>
+    <!-- Kibővített betűtípusok a különböző témákhoz (Condensed, Standard, Mono) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Alapértelmezett (Classic RTS - Emergency 4 stílus) */
+        :root, body[data-theme="classic"] {
+            --bg-hud: #1E2024;
+            --bg-panel: #2C3036;
+            --bg-panel-dark: #22252A;
+            --bg-header: #3A4048;
+
+            --btn-main: #4A5463;
+            --btn-hover: #5C6778;
+            --btn-pressed: #363D47;
+            --btn-border-light: #6A7587;
+            --btn-border-dark: #1F2329;
+            --ui-radius: 0px;
+            --btn-bottom-width: 3px;
+
+            --dept-fire: #C0392B;
+            --dept-fire-light: #E74C3C;
+            --dept-fire-dark: #922B21;
+            
+            --dept-police: #2980B9;
+            --dept-police-light: #3498DB;
+            --dept-police-dark: #1A5276;
+            
+            --dept-ems: #ECF0F1;
+            --dept-ems-text: #C0392B;
+            
+            --dept-tech: #F39C12;
+
+            --text-primary: #EAECEE;
+            --text-secondary: #ABB2B9;
+            --text-dark: #1E2024;
+
+            --border-panel: #15171A;
+            --border-light: #414751;
+            --selection: #F1C40F;
+            
+            --font-main: 'Roboto', sans-serif;
+            --font-heading: 'Roboto Condensed', sans-serif;
+            
+            --panel-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            --glow-hover: none;
+        }
+
+        /* Téma 2: Modern Blue (Diszpécserközpont) */
+        body[data-theme="modern"] {
+            --bg-hud: #0A111A;
+            --bg-panel: #141E2B;
+            --bg-panel-dark: #0E1621;
+            --bg-header: #1B2A3A;
+
+            --btn-main: #1E88E5;
+            --btn-hover: #42A5F5;
+            --btn-pressed: #1565C0;
+            --btn-border-light: #64B5F6;
+            --btn-border-dark: #0D47A1;
+            --ui-radius: 6px;
+            --btn-bottom-width: 1px;
+
+            --dept-fire: #FF7043;
+            --dept-fire-light: #FF8A65;
+            --dept-fire-dark: #D84315;
+            
+            --dept-police: #3949AB;
+            --dept-police-light: #5C6BC0;
+            --dept-police-dark: #283593;
+            
+            --dept-ems: #66BB6A; /* Modern rendszerekben a mentő zöld */
+            --dept-ems-text: #FFFFFF;
+            
+            --dept-tech: #FFCA28;
+
+            --text-primary: #E3F2FD;
+            --text-secondary: #90A4AE;
+            --text-dark: #0A111A;
+
+            --border-panel: #263A4F;
+            --border-light: #37474F;
+            --selection: #4FC3F7;
+            
+            --font-main: 'Roboto', sans-serif;
+            --font-heading: 'Roboto', sans-serif;
+            
+            --panel-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            --glow-hover: 0 0 10px rgba(79, 195, 247, 0.4);
+        }
+
+        /* Téma 3: Tactical Night (Sötét, magas kontrasztú) */
+        body[data-theme="tactical"] {
+            --bg-hud: #050505;
+            --bg-panel: #121212;
+            --bg-panel-dark: #0A0A0A;
+            --bg-header: #1A1A1A;
+
+            --btn-main: #222222;
+            --btn-hover: #333333;
+            --btn-pressed: #000000;
+            --btn-border-light: #444444;
+            --btn-border-dark: #000000;
+            --ui-radius: 0px;
+            --btn-bottom-width: 1px;
+
+            --dept-fire: #D32F2F;
+            --dept-fire-light: #EF5350;
+            --dept-fire-dark: #B71C1C;
+            
+            --dept-police: #1976D2;
+            --dept-police-light: #42A5F5;
+            --dept-police-dark: #0D47A1;
+            
+            --dept-ems: #E0E0E0;
+            --dept-ems-text: #D32F2F;
+            
+            --dept-tech: #F57C00;
+
+            --text-primary: #FFFFFF;
+            --text-secondary: #757575;
+            --text-dark: #000000;
+
+            --border-panel: #333333;
+            --border-light: #424242;
+            --selection: #FFFFFF;
+            
+            --font-main: 'Roboto Mono', monospace;
+            --font-heading: 'Roboto Mono', monospace;
+            
+            --panel-shadow: none;
+            --glow-hover: none;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-hud);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg-panel-dark); border-left: 1px solid var(--border-panel); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-header); border: 1px solid var(--border-panel); border-radius: var(--ui-radius); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--btn-main); }
+
+        .sidebar {
+            width: 20%;
+            min-width: 250px;
+            background-color: var(--bg-panel);
+            border-right: 2px solid var(--border-panel);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            background-color: var(--bg-panel-dark);
+            border-bottom: 2px solid var(--border-panel);
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 5px;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            background-color: var(--bg-panel-dark);
+            color: var(--text-primary);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            cursor: pointer;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--border-light);
+            transition: all 0.2s;
+        }
+
+        .menu-item i { margin-right: 15px; width: 20px; text-align: center; color: var(--text-secondary); }
+        .menu-item:hover { background-color: var(--btn-main); box-shadow: var(--glow-hover); }
+
+        .menu-item.active {
+            background-color: var(--btn-main);
+            border-left: 5px solid var(--selection);
+            color: #fff;
+            padding-left: 10px;
+            box-shadow: var(--glow-hover);
+        }
+        .menu-item.active i { color: var(--selection); }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease-in; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h1 {
+            font-family: var(--font-heading);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 2rem;
+            text-transform: uppercase;
+            background-color: var(--bg-panel-dark);
+            padding: 10px 15px;
+            border: 1px solid var(--border-panel);
+            border-left: 5px solid var(--btn-main);
+            border-radius: var(--ui-radius);
+        }
+
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--panel-shadow);
+            transition: background-color 0.3s;
+        }
+
+        .panel-header {
+            font-family: var(--font-heading);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background-color: var(--bg-header);
+            padding: 8px 15px;
+            border-bottom: 1px solid var(--border-panel);
+            border-top-left-radius: var(--ui-radius);
+            border-top-right-radius: var(--ui-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-body { padding: 15px; }
+
+        .btn {
+            background-color: var(--btn-main);
+            color: #fff;
+            border: 1px solid var(--border-panel);
+            border-top: 1px solid var(--btn-border-light);
+            border-bottom: var(--btn-bottom-width) solid var(--btn-border-dark);
+            border-radius: var(--ui-radius);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.1s;
+        }
+
+        .btn:hover { background-color: var(--btn-hover); box-shadow: var(--glow-hover); }
+        .btn:active {
+            border-bottom: 1px solid var(--btn-border-dark);
+            border-top: var(--btn-bottom-width) solid var(--border-panel);
+            background-color: var(--btn-pressed);
+            transform: translateY(calc(var(--btn-bottom-width) - 1px));
+        }
+
+        .btn-fire { background-color: var(--dept-fire); border-top-color: var(--dept-fire-light); border-bottom-color: var(--dept-fire-dark); }
+        .btn-fire:hover { background-color: var(--dept-fire-light); }
+        .btn-police { background-color: var(--dept-police); border-top-color: var(--dept-police-light); border-bottom-color: var(--dept-police-dark); }
+        .btn-police:hover { background-color: var(--dept-police-light); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: #fff;
+            text-transform: uppercase;
+            border: 1px solid rgba(0,0,0,0.5);
+            border-radius: var(--ui-radius);
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .dept-fire { background-color: var(--dept-fire); }
+        .dept-police { background-color: var(--dept-police); }
+        .dept-ems { background-color: var(--dept-ems); color: var(--dept-ems-text); }
+        .dept-tech { background-color: var(--dept-tech); }
+
+        .input-field {
+            background-color: var(--bg-panel-dark);
+            border: 1px solid var(--border-panel);
+            border-bottom: 1px solid var(--border-light);
+            border-radius: var(--ui-radius);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            padding: 8px 12px;
+            width: 100%;
+            max-width: 400px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { border: 1px solid var(--selection); box-shadow: var(--glow-hover); }
+
+        .select-field {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23ABB2B9" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+        .textarea-field {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .custom-checkbox {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            font-family: var(--font-heading);
+            color: var(--text-primary);
+            user-select: none;
+        }
+        .custom-checkbox input { display: none; }
+        .custom-checkbox .checkmark {
+            width: 18px; height: 18px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-panel-dark);
+            margin-right: 10px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: var(--ui-radius);
+            transition: all 0.2s;
+        }
+        .custom-checkbox:hover .checkmark { border-color: var(--selection); }
+        .custom-checkbox input:checked + .checkmark {
+            background: var(--selection);
+            border-color: var(--selection);
+        }
+        .custom-checkbox input:checked + .checkmark::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--bg-panel-dark);
+            font-size: 12px;
+        }
+
+        .inner-tabs-container {
+            border: 1px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            overflow: hidden;
+            background: var(--bg-panel-dark);
+        }
+        .inner-tabs-header {
+            display: flex;
+            background: var(--bg-header);
+            border-bottom: 1px solid var(--border-panel);
+        }
+        .inner-tab-btn {
+            padding: 8px 15px; cursor: pointer; color: var(--text-secondary);
+            font-family: var(--font-heading); font-weight: 700; text-transform: uppercase;
+            border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .inner-tab-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+        .inner-tab-btn.active { color: var(--selection); border-bottom-color: var(--selection); background: var(--bg-panel-dark); }
+        .inner-tab-content { display: none; padding: 15px; color: var(--text-primary); font-family: var(--font-main); }
+        .inner-tab-content.active { display: block; animation: fadeIn 0.2s ease-in; }
+
+        .tree-view { background-color: var(--bg-panel-dark); border: 1px solid var(--border-panel); padding: 5px; border-radius: var(--ui-radius); }
+        .tree-node { margin-left: 20px; border-left: 1px dotted var(--border-light); }
+        .tree-item { 
+            cursor: pointer; color: var(--text-primary); 
+            padding: 4px 8px; display: flex; align-items: center; 
+            font-family: var(--font-heading); font-size: 1.1rem;
+            border-radius: var(--ui-radius);
+        }
+        .tree-item:hover { background-color: var(--bg-header); }
+        .tree-item.active { background-color: var(--btn-main); color: #fff; }
+        .tree-icon { width: 20px; text-align: center; margin-right: 5px; }
+
+        .toggle-container { display: inline-flex; align-items: center; cursor: pointer; user-select: none; }
+        .toggle-label { font-family: var(--font-heading); margin-left: 10px; font-weight: 700; color: var(--text-primary); }
+        .toggle-box { 
+            width: 50px; height: 24px; 
+            background: var(--bg-panel-dark); border: 2px solid var(--border-panel); 
+            position: relative; border-radius: var(--ui-radius);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.6);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        
+        /* A fizikai gomb a kapcsolón belül */
+        .toggle-thumb { 
+            position: absolute; top: 1px; left: 1px; 
+            width: 18px; height: 18px; 
+            background: var(--btn-main); 
+            border: 1px solid var(--border-panel);
+            border-top: 1px solid var(--btn-border-light);
+            border-bottom: var(--btn-bottom-width) solid var(--btn-border-dark);
+            transition: left 0.1s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.2s; 
+            border-radius: var(--ui-radius);
+            z-index: 2;
+        }
+
+        /* OFF szöveg alapállapotban */
+        .toggle-box::after {
+            content: 'OFF';
+            position: absolute;
+            right: 6px;
+            top: 3px;
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--text-secondary);
+            z-index: 1;
+        }
+
+        .toggle-input { display: none; }
+        
+        /* Bekapcsolt (Checked) állapot */
+        .toggle-input:checked + .toggle-box { 
+            background: var(--selection); 
+            border-color: var(--border-light);
+        }
+        
+        /* ON szöveg bekapcsolt állapotban */
+        .toggle-input:checked + .toggle-box::after {
+            content: 'ON';
+            left: 7px;
+            right: auto;
+            color: var(--bg-panel-dark);
+        }
+        
+        /* Csúszka áthelyezése bekapcsolt állapotban */
+        .toggle-input:checked + .toggle-box .toggle-thumb { 
+            left: 27px; 
+            background: var(--text-primary); 
+            border-bottom: var(--btn-bottom-width) solid var(--border-light);
+            border-top: 1px solid #fff;
+        }
+
+        .tactical-slider { 
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+            outline: none; 
+            padding: 10px 0; /* Kényelmesebb kattintási felület */
+        }
+        
+        /* A csúszka háttere (vájat) */
+        .tactical-slider::-webkit-slider-runnable-track { 
+            width: 100%; 
+            height: 12px; 
+            background: var(--bg-hud); /* Sötétebb, mélyebb háttér */
+            border: 1px solid var(--border-light); /* Határozott körvonal */
+            border-radius: var(--ui-radius);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); /* Belső árnyék a térhatásért */
+        }
+        
+        /* A csúszka gombja */
+        .tactical-slider::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            height: 26px; 
+            width: 18px; 
+            background: var(--btn-main); /* Felveszi az aktív téma gomb színét */
+            border: 1px solid var(--border-panel);
+            border-top: 1px solid var(--btn-border-light);
+            border-bottom: var(--btn-bottom-width) solid var(--btn-border-dark); /* RTS gomb vastagság */
+            border-radius: var(--ui-radius);
+            cursor: pointer; 
+            margin-top: -8px; /* Középre igazítás a 12px-es sávon */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: background 0.1s, transform 0.1s;
+        }
+        
+        .tactical-slider::-webkit-slider-thumb:hover {
+            background: var(--btn-hover);
+        }
+        
+        /* Lenyomott állapot a gombhoz (RTS kattintás érzet) */
+        .tactical-slider:active::-webkit-slider-thumb {
+            background: var(--btn-pressed);
+            border-bottom: 1px solid var(--btn-border-dark);
+            border-top: var(--btn-bottom-width) solid var(--border-panel);
+            transform: translateY(calc(var(--btn-bottom-width) - 1px));
+        }
+
+        .progress-wrapper { margin-bottom: 15px; }
+        .progress-label { 
+            display: flex; justify-content: space-between; 
+            font-family: var(--font-heading); font-size: 0.95rem; 
+            margin-bottom: 5px; color: var(--text-primary); font-weight: 700; 
+            text-transform: uppercase;
+        }
+        .progress-container { 
+            width: 100%; height: 20px; 
+            background-color: var(--bg-hud); 
+            border: 1px solid var(--border-light); 
+            border-radius: var(--ui-radius); 
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6); 
+            position: relative; overflow: hidden; 
+        }
+        .progress-bar { 
+            height: 100%; 
+            background-color: var(--selection); 
+            border-top: 1px solid rgba(255,255,255,0.3);
+            border-right: 1px solid rgba(255,255,255,0.3);
+            transition: width 0.3s ease; 
+            position: relative; 
+        }
+        /* Csíkos, animált effekt játékos "folyamatban" érzethez */
+        .progress-bar.striped { 
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent); 
+            background-size: 20px 20px; 
+            animation: progress-stripes 1s linear infinite; 
+        }
+        @keyframes progress-stripes { from { background-position: 20px 0; } to { background-position: 0 0; } }
+        
+        .progress-bar.bg-fire { background-color: var(--dept-fire); }
+        .progress-bar.bg-police { background-color: var(--dept-police); }
+        .progress-bar.bg-ems { background-color: var(--dept-ems); }
+        
+        /* --- CSS Dokumentáció Táblázat --- */
+        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 0.95rem; }
+        .doc-table th { background: var(--bg-header); padding: 10px 15px; border: 1px solid var(--border-panel); color: var(--text-primary); font-family: var(--font-heading); text-transform: uppercase; text-align: left; }
+        .doc-table td { background: var(--bg-panel-dark); padding: 10px 15px; border: 1px solid var(--border-panel); color: var(--text-secondary); font-family: var(--font-main); vertical-align: top; }
+        .doc-selector { color: var(--selection); font-family: 'Roboto Mono', monospace !important; font-weight: 700; }
+        .doc-prop { color: var(--dept-police-light); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; }
+        .doc-val { color: var(--text-primary); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; }
+
+        /* --- Dropdown / Context Menu CSS --- */
+        .dropdown-wrapper { position: relative; display: inline-block; }
+        .dropdown-menu {
+            position: absolute; top: 100%; left: 0; margin-top: 8px;
+            background-color: var(--bg-panel-dark);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            padding: 8px;
+            min-width: 240px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+            display: none;
+            font-family: var(--font-main);
+            color: var(--text-primary);
+        }
+        .dropdown-menu.show { display: block; animation: fadeIn 0.15s ease-in; }
+        
+        .dd-item {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: calc(var(--ui-radius) - 2px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            position: relative;
+            transition: background-color 0.1s;
+        }
+        .dd-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .dd-item.disabled { color: var(--text-secondary); cursor: not-allowed; opacity: 0.5; }
+        .dd-item.disabled:hover { background-color: transparent; }
+        
+        .dd-separator { height: 1px; background-color: var(--border-light); margin: 6px 0; }
+        
+        .dd-named-separator {
+            display: flex; align-items: center; text-align: center;
+            color: var(--text-secondary); font-size: 0.8rem; margin: 8px 0 4px 0;
+        }
+        .dd-named-separator::before, .dd-named-separator::after {
+            content: ''; flex: 1; border-bottom: 1px solid var(--border-light);
+        }
+        .dd-named-separator:not(:empty)::before { margin-right: .5em; }
+        .dd-named-separator:not(:empty)::after { margin-left: .5em; }
+
+        /* Custom Checkbox és Radio a menüben */
+        .dd-icon-box {
+            width: 16px; height: 16px; 
+            border: 1px solid var(--text-secondary);
+            margin-right: 12px; 
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .dd-check { border-radius: 3px; }
+        .dd-radio { border-radius: 50%; }
+
+        .dd-item.checked .dd-icon-box { 
+            background-color: var(--selection); 
+            border-color: var(--selection); 
+        }
+        .dd-item.checked .dd-check::after { 
+            content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
+            color: var(--bg-panel-dark); font-size: 10px; 
+        }
+        .dd-item.checked .dd-radio::after { 
+            content: ''; width: 6px; height: 6px; 
+            background-color: var(--bg-panel-dark); border-radius: 50%; 
+        }
+
+        /* Almenü (Submenu) */
+        .dd-item.has-submenu { justify-content: space-between; padding-right: 8px; }
+        .dd-submenu {
+            position: absolute; left: 100%; top: -6px; margin-left: 2px;
+            background-color: var(--bg-panel-dark);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            padding: 8px; min-width: 150px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        .dd-item.has-submenu:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .dd-item.has-submenu:hover .dd-submenu { display: block; animation: fadeIn 0.15s ease-in; }
+    </style>
+</head>
+<body data-theme="classic">
+
+    <nav class="sidebar">
+        <div class="sidebar-header">Központ</div>
+        <ul class="menu-list">
+            <li class="menu-item" data-target="dashboard"><i class="fa-solid fa-satellite-dish"></i> Áttekintés</li>
+            <li class="menu-item" data-target="incidents"><i class="fa-solid fa-triangle-exclamation"></i> Események</li>
+            <li class="menu-item" data-target="lobby"><i class="fa-solid fa-users"></i> Lobby</li>
+            <li class="menu-item" data-target="components"><i class="fa-solid fa-layer-group"></i> UI Komponensek</li>
+            <li class="menu-item" data-target="docs"><i class="fa-solid fa-book"></i> UI Dokumentáció</li>
+            <li class="menu-item" data-target="godot-guide"><i class="fa-brands fa-godot-engine"></i> Godot Útmutató</li>
+            <li class="menu-item active" data-target="settings"><i class="fa-solid fa-gear"></i> Beállítások</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <div id="dashboard" class="tab-content">
+            <h1>HQ Áttekintés</h1>
+            <div class="panel">
+                <div class="panel-header" style="background-color: var(--dept-police);"><i class="fa-solid fa-info-circle"></i> Napi Jelentés</div>
+                <div class="panel-body">
+                    <p style="margin-bottom: 15px;">A város csendes. Minden egység az állomáson várakozik. Várjuk a riasztásokat.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-fire"><i class="fa-solid fa-fire"></i> Tűzriadó</button>
+                        <button class="btn btn-police"><i class="fa-solid fa-shield"></i> Járőr küldése</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="incidents" class="tab-content">
+            <h1>Aktív Események</h1>
+            
+            <div class="panel" style="border-left: 5px solid var(--dept-fire);">
+                <div class="panel-header" style="background-color: var(--bg-panel-dark); border-bottom: none;">
+                    <span class="badge dept-fire"><i class="fa-solid fa-fire"></i> TŰZ</span>
+                    <span style="font-weight: 700; font-family: var(--font-heading);">Égő gépjármű (Központ)</span>
+                </div>
+                <div class="panel-body" style="padding-top: 0;">
+                    <p style="margin-bottom: 10px; font-size: 0.95rem;">Egy személygépkocsi kigyulladt a kereszteződésben. Kisebb robbanásveszély.</p>
+                    <button class="btn"><i class="fa-solid fa-truck-fast"></i> Egységek riasztása</button>
+                </div>
+            </div>
+
+            <div class="panel" style="border-left: 5px solid var(--dept-ems);">
+                <div class="panel-header" style="background-color: var(--bg-panel-dark); border-bottom: none;">
+                    <span class="badge dept-ems"><i class="fa-solid fa-suitcase-medical"></i> MENTŐK</span>
+                    <span style="font-weight: 700; font-family: var(--font-heading);">Szívroham gyanúja (Lakópark)</span>
+                </div>
+                <div class="panel-body" style="padding-top: 0;">
+                    <p style="margin-bottom: 10px; font-size: 0.95rem;">Idős beteg, eszméletlen. Sürgősségi beavatkozás szükséges.</p>
+                    <button class="btn"><i class="fa-solid fa-truck-fast"></i> Egységek riasztása</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="lobby" class="tab-content">
+            <h1>Hálózati Játék (Lobby)</h1>
+            
+            <!-- ÁTHELYEZVE: Aktuális beállítások sávja (Ez mindig látszik a Lobby-ban, függetlenül az aktív fültől) -->
+            <div style="background-color: var(--bg-panel-dark); padding: 10px 15px; border: 1px solid var(--border-panel); border-radius: var(--ui-radius); margin-bottom: 15px; display: flex; gap: 20px; flex-wrap: wrap; font-family: var(--font-heading); color: var(--text-secondary); font-size: 0.95rem;">
+                <span><strong style="color: var(--text-primary);"><i class="fa-solid fa-map"></i> Térkép:</strong> Belváros</span>
+                <span><strong style="color: var(--text-primary);"><i class="fa-solid fa-gauge-high"></i> Nehézség:</strong> Nehéz</span>
+                <span><strong style="color: var(--text-primary);"><i class="fa-solid fa-cloud-sun"></i> Időjárás/Napszak:</strong> Dinamikus</span>
+                <span><strong style="color: var(--text-primary);"><i class="fa-solid fa-gamepad"></i> Irányítás:</strong> Csak saját egységek</span>
+            </div>
+
+            <div class="inner-tabs-container" style="display: flex; flex-direction: column; min-height: 60vh;">
+                <!-- LOBBY TABOK FEJLÉCE -->
+                <div class="inner-tabs-header">
+                    <div class="inner-tab-btn active" data-inner-target="lobby-main"><i class="fa-solid fa-house"></i> Főoldal</div>
+                    <div class="inner-tab-btn" data-inner-target="lobby-settings"><i class="fa-solid fa-gear"></i> Beállítások</div>
+                    <div class="inner-tab-btn" data-inner-target="lobby-units"><i class="fa-solid fa-truck-fast"></i> Egység Elosztás</div>
+                </div>
+
+                <!-- 1. TAB: FŐOLDAL (Itt kapott helyet a Chat, Játékosok és a Gombok) -->
+                <div class="inner-tab-content active" id="lobby-main" style="flex: 1; display: flex; flex-direction: column;">
+                    
+                    <!-- Kétoszlopos elrendezés: Játékosok és Chat -->
+                    <div style="display: flex; gap: 20px; flex: 1;">
+                        <!-- Bal oszlop: Játékosok -->
+                        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column;">
+                            <div class="panel-header" style="border-top-left-radius: var(--ui-radius); border-top-right-radius: var(--ui-radius); border: 1px solid var(--border-panel); border-bottom: none;"><i class="fa-solid fa-users"></i> Játékosok (3/4)</div>
+                            <div class="panel-body" style="background-color: var(--bg-panel); border: 1px solid var(--border-panel); flex: 1;">
+                                <div class="tree-view" style="height: 100%;">
+                                    <div class="tree-item"><i class="fa-solid fa-star tree-icon" style="color: var(--selection);"></i> PlayerOne (Host) <span class="badge dept-fire" style="margin-left:auto;">Tűzoltóság</span></div>
+                                    <div class="tree-item"><i class="fa-solid fa-check tree-icon" style="color: var(--dept-ems);"></i> TacticalDoc <span class="badge dept-ems" style="margin-left:auto;">Mentők</span></div>
+                                    <div class="tree-item"><i class="fa-solid fa-clock tree-icon" style="color: var(--text-secondary);"></i> Dispatcher99 <span class="badge dept-police" style="margin-left:auto;">Rendőrség</span></div>
+                                    <div class="tree-item" style="color: var(--text-secondary);"><i class="fa-solid fa-spinner tree-icon"></i> Várakozás játékosra...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jobb oszlop: Chat -->
+                        <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column;">
+                            <div class="panel-header" style="border-top-left-radius: var(--ui-radius); border-top-right-radius: var(--ui-radius); border: 1px solid var(--border-panel); border-bottom: none;"><i class="fa-solid fa-comments"></i> Csapat Chat</div>
+                            <div class="panel-body" style="background-color: var(--bg-panel); border: 1px solid var(--border-panel); flex: 1; display: flex; flex-direction: column; gap: 10px;">
+                                <div style="flex: 1; background-color: var(--bg-panel-dark); border: 1px solid var(--border-panel); border-radius: var(--ui-radius); padding: 10px; font-family: var(--font-main); font-size: 0.95rem; overflow-y: auto;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 5px;">[Rendszer] Csatlakoztál a szerverhez: EU-West-01</p>
+                                    <p style="color: var(--text-secondary); margin-bottom: 5px;">[Rendszer] PlayerOne módosította a nehézséget: Nehéz.</p>
+                                    <p style="margin-bottom: 5px;"><strong>PlayerOne:</strong> Sziasztok, valaki jönne a műszaki mentőkkel (THW)?</p>
+                                    <p style="margin-bottom: 5px;"><strong style="color: var(--dept-ems);">TacticalDoc:</strong> Én maradok a mentőknél, kell a heal.</p>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" class="input-field" placeholder="Üzenet írása..." style="flex: 1; max-width: none;">
+                                    <button class="btn"><i class="fa-solid fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alsó sáv: Állapot és Gombok -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-panel);">
+                        <div style="color: var(--dept-ems); font-family: var(--font-heading); font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check-double"></i> Mindenki készen áll
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-police"><i class="fa-solid fa-check"></i> Készen állok</button>
+                            <button class="btn" style="background-color: var(--dept-ems); color: var(--dept-ems-text);"><i class="fa-solid fa-play"></i> Indítás</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. TAB: BEÁLLÍTÁSOK -->
+                <div class="inner-tab-content" id="lobby-settings">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        
+                        <div class="panel" style="margin-bottom: 0;">
+                            <div class="panel-header"><i class="fa-solid fa-server"></i> Szerver Beállítások</div>
+                            <div class="panel-body">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Lobby jelszó:</label>
+                                    <input type="password" class="input-field" placeholder="Hagyd üresen, ha publikus" style="max-width: 100%;">
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Max játékosok:</label>
+                                    <input type="number" class="input-field" value="4" min="2" max="8" style="max-width: 100%;">
+                                </div>
+                                <div>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" checked>
+                                        <div class="checkmark"></div>
+                                        Késői csatlakozás engedélyezése (Drop-in)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel" style="margin-bottom: 0;">
+                            <div class="panel-header"><i class="fa-solid fa-map"></i> Küldetés Paraméterek</div>
+                            <div class="panel-body">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Térkép kiválasztása:</label>
+                                    <select class="input-field select-field" style="max-width: 100%;">
+                                        <option>Belváros</option>
+                                        <option>Ipari Park</option>
+                                        <option>Autópálya</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Nehézség:</label>
+                                    <select class="input-field select-field" style="max-width: 100%;">
+                                        <option>Normál (Standard riasztások)</option>
+                                        <option selected>Nehéz (Sűrű események)</option>
+                                        <option>Realizmus (Hardcore mód)</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" checked>
+                                        <div class="checkmark"></div>
+                                        Dinamikus időjárás / Napszak (Day/Night cycle)
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" checked>
+                                        <div class="checkmark"></div>
+                                        Csak saját egységek irányítása
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 3. TAB: EGYSÉG ELOSZTÁS -->
+                <div class="inner-tab-content" id="lobby-units">
+                    <p style="margin-bottom: 15px; color: var(--text-secondary);">Kattints az egységekre, amiket a játék elején irányítani szeretnél. (A szabad kapacitás frakciónként korlátozott.)</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                        
+                        <!-- Tűzoltóság Panel -->
+                        <div class="panel" style="border-left: 5px solid var(--dept-fire); margin-bottom: 0;">
+                            <div class="panel-header" style="background-color: var(--bg-panel-dark);"><span class="badge dept-fire"><i class="fa-solid fa-fire"></i> Tűzoltóság</span></div>
+                            <div class="panel-body" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div class="menu-item active" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-truck"></i> Fecskendő (1/2)
+                                </div>
+                                <div class="menu-item active" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-truck-ramp-box"></i> Tolólétra (1/1)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-car"></i> Parancsnoki autó (0/1)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rendőrség Panel -->
+                        <div class="panel" style="border-left: 5px solid var(--dept-police); margin-bottom: 0;">
+                            <div class="panel-header" style="background-color: var(--bg-panel-dark);"><span class="badge dept-police"><i class="fa-solid fa-shield"></i> Rendőrség</span></div>
+                            <div class="panel-body" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-car-side"></i> Járőrautó (0/3)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-van-shuttle"></i> Csapatszállító (0/1)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-helicopter"></i> Helikopter (0/1)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mentők Panel -->
+                        <div class="panel" style="border-left: 5px solid var(--dept-ems); margin-bottom: 0;">
+                            <div class="panel-header" style="background-color: var(--bg-panel-dark);"><span class="badge dept-ems"><i class="fa-solid fa-suitcase-medical"></i> Mentőszolgálat</span></div>
+                            <div class="panel-body" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-truck-medical"></i> Esetkocsi (0/4)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-truck-medical"></i> Rohammentő (0/1)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-car-side"></i> Orvosi Ügyelet (0/2)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Műszaki Panel -->
+                        <div class="panel" style="border-left: 5px solid var(--dept-tech); margin-bottom: 0;">
+                            <div class="panel-header" style="background-color: var(--bg-panel-dark);"><span class="badge dept-tech"><i class="fa-solid fa-wrench"></i> Műszaki (THW)</span></div>
+                            <div class="panel-body" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-truck-pickup"></i> Vontató (0/2)
+                                </div>
+                                <div class="menu-item" style="width: auto; padding: 6px 12px; margin: 0; border-top: 1px solid var(--border-panel);" onclick="this.classList.toggle('active')">
+                                    <i class="fa-solid fa-crane"></i> Autódaru (0/1)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="components" class="tab-content">
+            <h1>UI Komponensek</h1>
+            
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-mouse-pointer"></i> 01 - Gombok & Akciók</div>
+                <div class="panel-body" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn">Alap Művelet</button>
+                    <button class="btn btn-fire"><i class="fa-solid fa-fire-extinguisher"></i> Oltás</button>
+                    <button class="btn btn-police"><i class="fa-solid fa-handcuffs"></i> Letartóztatás</button>
+                    <button class="btn" style="background-color: var(--dept-ems); color: var(--dept-ems-text); border-top-color: #FFF;"><i class="fa-solid fa-briefcase-medical"></i> Gyógyítás</button>
+                    <button class="btn" style="background-color: var(--dept-tech); border-top-color: #FAD7A1; border-bottom-color: #D68910;"><i class="fa-solid fa-bolt"></i> Szerelés</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-tags"></i> 02 - Egység Jelvények</div>
+                <div class="panel-body" style="display: flex; gap: 10px;">
+                    <span class="badge dept-fire">FW (Tűzoltó)</span>
+                    <span class="badge dept-police">POL (Rendőr)</span>
+                    <span class="badge dept-ems">EMS (Mentő)</span>
+                    <span class="badge dept-tech">THW (Műszaki)</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="panel" style="flex: 1; min-width: 300px;">
+                    <div class="panel-header"><i class="fa-solid fa-sliders"></i> 03 - Vezérlők</div>
+                    <div class="panel-body">
+                        <div style="margin-bottom: 20px;">
+                            <label class="toggle-container">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <div class="toggle-box"><div class="toggle-thumb"></div></div>
+                                <span class="toggle-label">Sziréna automatika</span>
+                            </label>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-family: var(--font-heading); font-weight: 700;">
+                                <span>Játék sebessége</span>
+                                <span id="slider-val">1.0x</span>
+                            </div>
+                            <input type="range" min="1" max="3" value="1" step="1" class="tactical-slider" oninput="document.getElementById('slider-val').innerText = this.value + '.0x'">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" style="flex: 1; min-width: 300px;">
+                    <div class="panel-header"><i class="fa-solid fa-sitemap"></i> 04 - Egységfa (Roster)</div>
+                    <div class="panel-body" style="padding: 10px;">
+                        <div class="tree-view">
+                            <div class="tree-item"><i class="fa-solid fa-minus tree-icon"></i> Tűzoltó Parancsnokság</div>
+                            <div class="tree-node">
+                                <div class="tree-item active"><i class="fa-solid fa-truck-medical tree-icon"></i> Pumper-01</div>
+                                <div class="tree-item"><i class="fa-solid fa-truck tree-icon"></i> Ladder-04</div>
+                            </div>
+                            <div class="tree-item" style="margin-top: 5px;"><i class="fa-solid fa-plus tree-icon"></i> Központi Kórház</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                 <div class="panel-header"><i class="fa-solid fa-keyboard"></i> 05 - Adatbevitel</div>
+                 <div class="panel-body">
+                     <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Jármű hívójel:</label>
+                     <input type="text" class="input-field" placeholder="Pl: Engine 1">
+                 </div>
+            </div>
+
+            <div class="panel">
+                 <div class="panel-header"><i class="fa-solid fa-list-check"></i> 06 - Bővített Űrlap Elemek</div>
+                 <div class="panel-body">
+                     
+                     <div style="margin-bottom: 15px;">
+                         <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Egység típusa (Select):</label>
+                         <select class="input-field select-field">
+                             <option value="fw">Tűzoltóság (Fire Dept)</option>
+                             <option value="pd">Rendőrség (Police Dept)</option>
+                             <option value="ems">Mentők (EMS)</option>
+                             <option value="thw">Műszaki Mentő (Tech)</option>
+                         </select>
+                     </div>
+
+                     <div style="margin-bottom: 15px;">
+                         <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading);">Esemény leírása (Textarea):</label>
+                         <textarea class="input-field textarea-field" placeholder="Részletes jelentés beírása..."></textarea>
+                     </div>
+
+                     <div>
+                         <label class="custom-checkbox">
+                             <input type="checkbox" checked>
+                             <div class="checkmark"></div>
+                             Prioritásos riasztás (Kék villogó engedélyezve)
+                         </label>
+                     </div>
+
+                 </div>
+            </div>
+
+            <div class="panel">
+                 <div class="panel-header"><i class="fa-solid fa-folder-tree"></i> 07 - Belső Tabolt Panel</div>
+                 <div class="panel-body">
+                     <div class="inner-tabs-container">
+                         <div class="inner-tabs-header">
+                             <div class="inner-tab-btn active" data-inner-target="it-info">Egység Infó</div>
+                             <div class="inner-tab-btn" data-inner-target="it-gear">Felszerelés</div>
+                             <div class="inner-tab-btn" data-inner-target="it-log">Napló</div>
+                         </div>
+                         <div class="inner-tab-content active" id="it-info">
+                             <h3 style="font-family: var(--font-heading); margin-bottom: 10px; color: var(--selection);">PUMPER-01</h3>
+                             <p><strong>Státusz:</strong> Bevetésen</p>
+                             <p><strong>Személyzet:</strong> 4/6 fő</p>
+                             <p><strong>Víz tartály:</strong> 85%</p>
+                         </div>
+                         <div class="inner-tab-content" id="it-gear">
+                             <ul style="list-style-position: inside; color: var(--text-secondary);">
+                                 <li>Tömlő (3x)</li>
+                                 <li>Feszítővágó (1x)</li>
+                                 <li>Poroltó (2x)</li>
+                                 <li>Légzőkészülék (4x)</li>
+                             </ul>
+                         </div>
+                         <div class="inner-tab-content" id="it-log">
+                             <p style="font-family: 'Roboto Mono', monospace; font-size: 0.9rem; color: var(--text-secondary);">
+                                 [14:02] Egység kiállt a garázsból.<br>
+                                 [14:05] Megérkezett a helyszínre.<br>
+                                 <span style="color: var(--selection);">[14:08] Oltás megkezdve.</span>
+                             </p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+
+            <div class="panel">
+                 <div class="panel-header"><i class="fa-solid fa-bars-progress"></i> 08 - Folyamatjelzők (Progress)</div>
+                 <div class="panel-body">
+                     
+                     <div class="progress-wrapper">
+                         <div class="progress-label">
+                             <span><i class="fa-solid fa-droplet" style="color: #3498DB;"></i> Víztartály (Pumper-01)</span> 
+                             <span id="prog-val-1">75%</span>
+                         </div>
+                         <div class="progress-container">
+                             <div class="progress-bar bg-police" style="width: 75%;"></div>
+                         </div>
+                     </div>
+
+                     <div class="progress-wrapper" style="margin-bottom: 20px;">
+                         <div class="progress-label">
+                             <span><i class="fa-solid fa-wrench" style="color: var(--dept-tech);"></i> Jármű műszaki mentése...</span> 
+                             <span id="prog-val-2">45%</span>
+                         </div>
+                         <div class="progress-container">
+                             <!-- Striped osztály adja az animált csíkozást -->
+                             <div class="progress-bar striped" style="width: 45%; background-color: var(--dept-tech);"></div>
+                         </div>
+                     </div>
+
+                     <button class="btn" onclick="simulateProgress()"><i class="fa-solid fa-play"></i> Mentés Szimulálása</button>
+                 </div>
+            </div>
+
+            <!-- ÚJ PANEL: 09 - Dropdown Menü -->
+            <div class="panel">
+                 <div class="panel-header"><i class="fa-solid fa-caret-down"></i> 09 - Lebegő Menü (Context Menu)</div>
+                 <div class="panel-body">
+                     
+                     <div class="dropdown-wrapper">
+                         <button class="btn" id="dd-btn"><i class="fa-solid fa-bars"></i> Menü megnyitása</button>
+                         
+                         <div class="dropdown-menu" id="dd-menu">
+                             <div class="dd-item">Item</div>
+                             <div class="dd-item disabled">Disabled Item</div>
+                             
+                             <div class="dd-separator"></div>
+                             
+                             <div class="dd-item" onclick="toggleDdCheck(this)">
+                                 <div class="dd-icon-box dd-check"></div> Check Item
+                             </div>
+                             <div class="dd-item checked" onclick="toggleDdCheck(this)">
+                                 <div class="dd-icon-box dd-check"></div> Checked Item
+                             </div>
+                             
+                             <div class="dd-separator"></div>
+                             
+                             <div class="dd-item" onclick="toggleDdCheck(this)">
+                                 <div class="dd-icon-box dd-radio"></div> Radio Item
+                             </div>
+                             <div class="dd-item checked" onclick="toggleDdCheck(this)">
+                                 <div class="dd-icon-box dd-radio"></div> Checked Radio Item
+                             </div>
+                             
+                             <div class="dd-named-separator">Named Separator</div>
+                             
+                             <div class="dd-item has-submenu">
+                                 <span>Submenu</span>
+                                 <i class="fa-solid fa-arrow-right" style="font-size: 11px; color: var(--text-secondary);"></i>
+                                 
+                                 <div class="dd-submenu">
+                                     <div class="dd-item">Subitem 1</div>
+                                     <div class="dd-item">Subitem 2</div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+
+                 </div>
+            </div>
+
+        </div>
+
+        <!-- ÚJ TAB: UI DOKUMENTÁCIÓ -->
+        <div id="docs" class="tab-content">
+            <h1>UI Dokumentáció (CSS)</h1>
+            <p style="margin-bottom: 25px; color: var(--text-secondary); font-size: 1.05rem;">Ez a szekció tartalmazza a keretrendszer összes egyedi komponensének CSS tulajdonságait és interakciós (hover, active, focus) állapotait, összekötve a témafüggő CSS változókkal.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">
+                
+                <!-- 1. Gombok -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-mouse-pointer"></i> Gombok (.btn)</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">.btn (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--btn-main)</span><br>
+                                        <span class="doc-prop">color:</span> <span class="doc-val">#fff</span><br>
+                                        <span class="doc-prop">border-top:</span> <span class="doc-val">1px solid var(--btn-border-light)</span><br>
+                                        <span class="doc-prop">border-bottom:</span> <span class="doc-val">var(--btn-bottom-width) solid var(--btn-border-dark)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.btn:hover</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--btn-hover)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">var(--glow-hover)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.btn:active</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--btn-pressed)</span><br>
+                                        <span class="doc-prop">border-bottom:</span> <span class="doc-val">1px solid var(--btn-border-dark)</span><br>
+                                        <span class="doc-prop">transform:</span> <span class="doc-val">translateY(calc(var(--btn-bottom-width) - 1px))</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. Oldalmenü -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-list"></i> Oldalmenü (.menu-item)</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">.menu-item (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--bg-panel-dark)</span><br>
+                                        <span class="doc-prop">color:</span> <span class="doc-val">var(--text-primary)</span><br>
+                                        <span class="doc-prop">border-top:</span> <span class="doc-val">1px solid var(--border-light)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.menu-item:hover</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--btn-main)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">var(--glow-hover)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.menu-item.active</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--btn-main)</span><br>
+                                        <span class="doc-prop">border-left:</span> <span class="doc-val">5px solid var(--selection)</span><br>
+                                        <span class="doc-prop">color:</span> <span class="doc-val">#fff</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Form és Beviteli mezők -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-keyboard"></i> Beviteli Mezők (.input-field)</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">.input-field (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--bg-panel-dark)</span><br>
+                                        <span class="doc-prop">color:</span> <span class="doc-val">var(--text-primary)</span><br>
+                                        <span class="doc-prop">border:</span> <span class="doc-val">1px solid var(--border-panel)</span><br>
+                                        <span class="doc-prop">border-bottom:</span> <span class="doc-val">1px solid var(--border-light)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.input-field:focus</td>
+                                    <td>
+                                        <span class="doc-prop">border-color:</span> <span class="doc-val">var(--selection)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">var(--glow-hover)</span><br>
+                                        <span class="doc-prop">outline:</span> <span class="doc-val">none</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. Custom Checkbox & Toggle -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-check-square"></i> Jelölők (Checkbox & Toggle)</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">.checkmark (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--bg-panel-dark)</span><br>
+                                        <span class="doc-prop">border:</span> <span class="doc-val">1px solid var(--border-light)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">:checked + .checkmark</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--selection)</span><br>
+                                        <span class="doc-prop">border-color:</span> <span class="doc-val">var(--selection)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.toggle-box (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--bg-panel-dark)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">inset 0 2px 5px rgba(0,0,0,0.6)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">:checked + .toggle-box</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--selection)</span><br>
+                                        <span class="doc-prop">border-color:</span> <span class="doc-val">var(--border-light)</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. Taktikai Csúszka (Slider) -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-sliders"></i> Taktikai Csúszka (.tactical-slider)</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">::-webkit-slider-<br>runnable-track</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--bg-hud)</span><br>
+                                        <span class="doc-prop">border:</span> <span class="doc-val">1px solid var(--border-light)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">inset 0 2px 4px rgba(0,0,0,0.6)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">::-webkit-slider-<br>thumb (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--btn-main)</span><br>
+                                        <span class="doc-prop">border-bottom:</span> <span class="doc-val">var(--btn-bottom-width) solid var(--btn-border-dark)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">:active::-webkit-<br>slider-thumb</td>
+                                    <td>
+                                        <span class="doc-prop">background:</span> <span class="doc-val">var(--btn-pressed)</span><br>
+                                        <span class="doc-prop">transform:</span> <span class="doc-val">translateY(...)</span> (Besüllyedés)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6. Kontextus Menü & Egyebek -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-caret-down"></i> Lebegő Menü & Panelek</div>
+                    <div class="panel-body" style="padding: 0;">
+                        <table class="doc-table" style="margin: 0; border: none;">
+                            <thead><tr><th>Selector / Állapot</th><th>Kiemelt CSS Tulajdonságok</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="doc-selector">.dropdown-menu</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--bg-panel-dark)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">0 4px 15px rgba(0,0,0,0.5)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.dd-item:hover</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">rgba(255, 255, 255, 0.1)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.dd-item.checked<br>.dd-icon-box</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--selection)</span><br>
+                                        <span class="doc-prop">border-color:</span> <span class="doc-val">var(--selection)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="doc-selector">.panel (Alap)</td>
+                                    <td>
+                                        <span class="doc-prop">background-color:</span> <span class="doc-val">var(--bg-panel)</span><br>
+                                        <span class="doc-prop">box-shadow:</span> <span class="doc-val">var(--panel-shadow)</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ÚJ TAB: GODOT ÚTMUTATÓ -->
+        <div id="godot-guide" class="tab-content">
+            <h1>Godot 4 (.NET/C#) - UI Implementációs Útmutató</h1>
+            <p style="margin-bottom: 25px; color: var(--text-secondary); font-size: 1.05rem;">A HTML/CSS/JS alapú dizájnt viszonylag egyszerűen át lehet ültetni Godot-ba, mivel a Godot <code>Control</code> node rendszere nagyon hasonló logikával (dobozmodell, margók, konténerek) dolgozik, mint a webes CSS.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                
+                <!-- 1. Témarendszer -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-palette"></i> 1. A Témarendszer és Színek (CSS Variables -> Godot Theme)</div>
+                    <div class="panel-body">
+                        <p>A weben CSS változókat (<code>--bg-panel</code>, <code>--btn-main</code>) használtunk. Godot-ban erre a <strong>Theme (Téma) erőforrás (.tres)</strong> való.</p>
+                        <ul style="margin-left: 20px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">
+                            <li>A FileSystem ablakban hozz létre egy új Theme erőforrást (pl. <span style="color: var(--selection);">classic_rts.tres</span>).</li>
+                            <li>Ezt a témát rendeld hozzá a legfelső (Root) <code>Control</code> node-odhoz az Inspectorban a Theme tulajdonságnál.</li>
+                            <li>A témaváltást (Classic, Modern, Tactical) 3 külön <code>.tres</code> fájllal és egy egyszerű C# kóddal oldhatod meg:</li>
+                        </ul>
+                        <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.9rem; color: var(--text-primary); white-space: pre-wrap;">// Témaváltás C#-ban
+public void SetThemeClassic()
+{
+    Theme = GD.Load&lt;Theme&gt;("res://themes/classic_rts.tres");
+}</div>
+                    </div>
+                </div>
+
+                <!-- 2. HTML Elemek Megfeleltetése -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-code-compare"></i> 2. HTML elemek megfeleltetése Godot Node-okra</div>
+                    <div class="panel-body">
+                        
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px solid var(--border-divider); padding-bottom: 5px;">Elrendezés (CSS Flexbox -> Godot Containers)</h3>
+                        <ul style="margin-left: 20px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+                            <li><strong>flex-direction: row;</strong> <i class="fa-solid fa-arrow-right" style="margin: 0 10px;"></i> Használj <strong style="color: var(--selection);">HBoxContainer</strong>-t.</li>
+                            <li><strong>flex-direction: column;</strong> <i class="fa-solid fa-arrow-right" style="margin: 0 10px;"></i> Használj <strong style="color: var(--selection);">VBoxContainer</strong>-t.</li>
+                            <li><strong>padding: 20px;</strong> <i class="fa-solid fa-arrow-right" style="margin: 0 10px;"></i> Használj <strong style="color: var(--selection);">MarginContainer</strong>-t a dobozok körül.</li>
+                        </ul>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                            <div style="background-color: var(--bg-panel-dark); padding: 15px; border: 1px solid var(--border-panel); border-radius: 4px;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 8px;">Panelek (.panel -> PanelContainer)</strong>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">A kártyákhoz használj <code>PanelContainer</code> node-ot. A stílust a Témán belül egy <code>StyleBoxFlat</code> hozzáadásával add meg (Bg Color, Border, Corner Radius, Shadow).</p>
+                            </div>
+                            
+                            <div style="background-color: var(--bg-panel-dark); padding: 15px; border: 1px solid var(--border-panel); border-radius: 4px;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 8px;">Gombok (.btn -> Button)</strong>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Használj <code>StyleBoxFlat</code>-et. Normal állapot: vastagabb alsó border. Pressed állapot: vékonyabb alsó border, és a <em>Content Margin Top</em> növelésével imitáld a lenyomódást.</p>
+                            </div>
+                            
+                            <div style="background-color: var(--bg-panel-dark); padding: 15px; border: 1px solid var(--border-panel); border-radius: 4px;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 8px;">Egyéb elemek</strong>
+                                <ul style="margin-left: 15px; color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">
+                                    <li>Csúszka <i class="fa-solid fa-arrow-right"></i> <code>HSlider</code></li>
+                                    <li>Folyamatjelző <i class="fa-solid fa-arrow-right"></i> <code>ProgressBar</code></li>
+                                    <li>Kapcsoló/Toggle <i class="fa-solid fa-arrow-right"></i> <code>CheckButton</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Tabok logikája -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-folder-tree"></i> 3. Az Oldalmenü és a Tabok Logikája</div>
+                    <div class="panel-body">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 300px;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 10px;">A) TabContainer (Beépített, egyszerű)</strong>
+                                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 10px;">Tegyél le egy <code>TabContainer</code>-t, rejtsd el a felső füleket (Tabs Visible = off). Minden fül egy belső Control lesz.</p>
+                                <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap;">private void OnDashboardBtnPressed()
+{
+    GetNode&lt;TabContainer&gt;("MainTabContainer").CurrentTab = 0;
+}
+
+private void OnLobbyBtnPressed()
+{
+    GetNode&lt;TabContainer&gt;("MainTabContainer").CurrentTab = 1;
+}</div>
+                            </div>
+                            <div style="flex: 1; min-width: 300px;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 10px;">B) Visible property (Rugalmas, JS-szerű)</strong>
+                                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 10px;">Minden "oldal" egy külön UI Jelenet (Scene) vagy konténer, amelynek a láthatóságát (visible) állítjuk.</p>
+                                <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap;">private void OnMenuItemSelected(string page)
+{
+    GetNode&lt;Control&gt;("DashboardPanel").Visible = (page == "dash");
+    GetNode&lt;Control&gt;("LobbyPanel").Visible = (page == "lobby");
+    // ...
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Ikonok & Komponensek -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-puzzle-piece"></i> 4. Ikonok (FontAwesome) & Komponensek</div>
+                    <div class="panel-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 15px;"><strong>Ikonok:</strong> Töltsd le a FontAwesome <code>.ttf</code> fájlját, állítsd be egy <code>Label</code> fontjának, és másold be az ikon unicode karakterét a Cheatsheet-ről (pl. ).</p>
+                        <p style="color: var(--text-secondary);"><strong>Komponens alapú fejlesztés:</strong> Ahogy weben újrahasznosítottuk a <code>.btn</code>-t, Godot-ban mentsd el a gombot vagy a jelvényeket <strong>külön Scene-ként (Jelenetként)</strong> (pl. <code>CustomButton.tscn</code>). Ezeket a jeleneteket aztán úgy húzhatod be a fő felületre, mint a Lego kockákat! (Készíthetsz hozzájuk <code>[Export]</code> változókat C#-ban is, pl. szín beállítására).</p>
+                    </div>
+                </div>
+
+                <!-- 5. Események és Szignálok -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-bolt"></i> 5. UI Események és Szignálok (C#)</div>
+                    <div class="panel-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 15px;">A JavaScript <code>addEventListener</code> megfelelője a Godot-ban a Szignálok (Signals) rendszere. C# esetében a legtisztább, ha ezeket kódból, események (events) segítségével kötöd be a <code>_Ready()</code> metódusban, ahelyett, hogy az Editort használnád.</p>
+                        <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap;">public override void _Ready()
+{
+    // Gomb lekérése és esemény feliratkozás (mint a JS onclick)
+    Button dispatchBtn = GetNode&lt;Button&gt;("DispatchButton");
+    dispatchBtn.Pressed += OnDispatchButtonPressed;
+    
+    // Slider értékváltozás (mint a JS oninput)
+    HSlider speedSlider = GetNode&lt;HSlider&gt;("SpeedSlider");
+    speedSlider.ValueChanged += OnSpeedSliderChanged;
+}
+
+private void OnDispatchButtonPressed()
+{
+    GD.Print("Egységek riasztva!");
+}
+
+private void OnSpeedSliderChanged(double value)
+{
+    GetNode&lt;Label&gt;("SliderValueLabel").Text = $"{value}x";
+}</div>
+                    </div>
+                </div>
+
+                <!-- 6. Animációk és Tweenek -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-film"></i> 6. CSS Tranzíciók kiváltása (Godot Tweens)</div>
+                    <div class="panel-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 15px;">A weben CSS-t használtunk (pl. <code>transition: background-color 0.2s</code> vagy <code>animation: fadeIn</code>). Godot-ban az ilyen UI animációkhoz a beépített <strong>Tween</strong> osztály a legjobb eszköz, ami tökéletes fade-in effektekhez vagy csúszkák/progress barok sima mozgatásához.</p>
+                        <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap;">// Fade-in animáció egy lebegő menü megnyitásakor
+private void ShowDropdownMenu(Control menu)
+{
+    menu.Visible = true;
+    menu.Modulate = new Color(1, 1, 1, 0); // Teljesen átlátszó kezdet
+
+    Tween tween = GetTree().CreateTween();
+    // 0.2 másodperc alatt felhúzzuk az alpha (átlátszóság) értéket 1-re
+    tween.TweenProperty(menu, "modulate:a", 1.0f, 0.2f)
+         .SetTrans(Tween.TransitionType.Sine)
+         .SetEase(Tween.EaseType.Out);
+}
+
+// Progress bar értékének sima, animált növelése
+private void AnimateProgressBar(ProgressBar bar, double targetValue)
+{
+    Tween tween = GetTree().CreateTween();
+    tween.TweenProperty(bar, "value", targetValue, 0.5f);
+}</div>
+                    </div>
+                </div>
+
+                <!-- 7. Egyedi Komponensek -->
+                <div class="panel" style="margin-bottom: 0;">
+                    <div class="panel-header"><i class="fa-solid fa-boxes-stacked"></i> 7. Egyedi Komponensek Készítése (C# Szkriptek)</div>
+                    <div class="panel-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 15px;">A komplexebb HTML struktúrákat (mint a saját Toggle kapcsolónk vagy az ikonnal ellátott gombok) érdemes egyedi C# szkripttel ellátott jelenetekként (Scene) megírni. Az <code>[Export]</code> attribútummal olyan tulajdonságokat adhatsz nekik, amiket utána a Godot Editorban egy kattintással állíthatsz.</p>
+                        <div style="background-color: var(--bg-hud); padding: 15px; border-radius: 4px; border: 1px solid var(--border-panel); font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap;">using Godot;
+
+public partial class TacticalToggle : CheckButton
+{
+    // Ez megjelenik a Godot Editorban a csomagra kattintva!
+    [Export]
+    public string OnText { get; set; } = "ON";
+
+    [Export]
+    public string OffText { get; set; } = "OFF";
+
+    public override void _Ready()
+    {
+        // Rácsatlakozunk a saját Toggled eseményünkre
+        Toggled += OnToggleStateChanged;
+        UpdateLabelText(ButtonPressed); // Alapállapot beállítása
+    }
+
+    private void OnToggleStateChanged(bool isPressed)
+    {
+        UpdateLabelText(isPressed);
+        // Itt jöhet egy Tween animáció a kapcsoló gombjára...
+    }
+
+    private void UpdateLabelText(bool isPressed)
+    {
+        Text = isPressed ? OnText : OffText;
+    }
+}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <h1>Rendszer Beállítások</h1>
+            
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-palette"></i> Téma Választó</div>
+                <div class="panel-body">
+                    <p style="margin-bottom: 15px;">Válaszd ki a UI stílusát. A változások azonnal életbe lépnek.</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn" onclick="setTheme('classic')"><i class="fa-solid fa-fire-extinguisher"></i> Classic RTS</button>
+                        <button class="btn" style="background-color: var(--dept-police); border-top-color: var(--dept-police-light); border-bottom-color: var(--dept-police-dark);" onclick="setTheme('modern')"><i class="fa-solid fa-desktop"></i> Modern Blue</button>
+                        <button class="btn" style="background-color: #222; border-top-color: #444; border-bottom-color: #000;" onclick="setTheme('tactical')"><i class="fa-solid fa-moon"></i> Tactical Night</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </main>
+
+    <script>
+        // --- 1. Témaváltás funkció ---
+        function setTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+        }
+
+        // --- 2. Főmenü (Sidebar) váltás ---
+        const menuItems = document.querySelectorAll('.menu-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Eltávolítjuk az aktív osztályt minden menüpontról és tartalomról
+                menuItems.forEach(i => i.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Hozzáadjuk az aktív osztályt a kattintott menüponthoz
+                item.classList.add('active');
+                
+                // Megkeressük a hozzá tartozó tartalmat és megjelenítjük
+                const targetId = item.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // --- 3. Belső Tabolt Panel (UI Komponensek alatt) ---
+        const innerTabBtns = document.querySelectorAll('.inner-tab-btn');
+
+        innerTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const parentContainer = btn.closest('.inner-tabs-container');
+                const btnsInContainer = parentContainer.querySelectorAll('.inner-tab-btn');
+                const contentsInContainer = parentContainer.querySelectorAll('.inner-tab-content');
+
+                // Aktív osztályok eltávolítása csak az adott dobozon belül
+                btnsInContainer.forEach(b => b.classList.remove('active'));
+                contentsInContainer.forEach(c => c.classList.remove('active'));
+
+                // Új elem aktiválása
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-inner-target');
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // --- 4. Egységfa (Tree View) kattintás effekt ---
+        const treeItems = document.querySelectorAll('.tree-item');
+        treeItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                treeItems.forEach(i => i.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+            });
+        });
+        
+        // --- 5. Progress Bar Szimuláció ---
+        function simulateProgress() {
+            const bar = document.querySelector('.progress-wrapper:nth-child(2) .progress-bar');
+            const valText = document.getElementById('prog-val-2');
+            let currentWidth = parseInt(bar.style.width); // Jelenlegi százalék
+            
+            // Ha már 100%, akkor újraindítjuk 0-ról
+            if (currentWidth >= 100) {
+                currentWidth = 0;
+            }
+            
+            const interval = setInterval(() => {
+                currentWidth += Math.floor(Math.random() * 5) + 2; // Random ugrásokkal tölt (élethűbb)
+                
+                if (currentWidth >= 100) {
+                    currentWidth = 100;
+                    clearInterval(interval);
+                }
+                
+                bar.style.width = currentWidth + '%';
+                valText.innerText = currentWidth + '%';
+            }, 300);
+        }
+
+        // --- 6. Dropdown / Context Menu Logika ---
+        const ddBtn = document.getElementById('dd-btn');
+        const ddMenu = document.getElementById('dd-menu');
+
+        if (ddBtn && ddMenu) {
+            // Gomb kattintás - menü kinyitása/bezárása
+            ddBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Megakadályozzuk, hogy a kattintás továbbmenjen a dokumentumra
+                ddMenu.classList.toggle('show');
+            });
+
+            // Ne záródjon be, ha a menün belül (pl. egy checkboxra) kattintunk
+            ddMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Kattintás bárhol máshol - menü bezárása
+            document.addEventListener('click', () => {
+                ddMenu.classList.remove('show');
+            });
+        }
+
+        // Checkbox/Radio állapotváltó
+        function toggleDdCheck(element) {
+            element.classList.toggle('checked');
+        }
+
+        // Inicializálás: Biztosítjuk, hogy a beállítások fül látszódjon induláskor,
+        // mivel az van active-ra állítva a HTML menüben.
+        document.getElementById('settings').classList.add('active');
+    </script>
+</body>
+</html>
