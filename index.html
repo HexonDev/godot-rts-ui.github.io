@@ -748,6 +748,29 @@
         }
         .action-btn.empty { background: transparent; border: 1px dashed var(--border-light); opacity: 0.3; box-shadow: none; cursor: default; }
         .action-btn.empty:active { transform: none; border-bottom: 1px dashed var(--border-light); border-top: 1px dashed var(--border-light); background: transparent; }
+
+        /* --- Diszpécser Modal CSS --- */
+        .game-modal-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+        .game-modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.2s ease-in;
+        }
+        .game-modal {
+            width: 90%;
+            max-width: 800px;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body data-theme="classic">
@@ -778,8 +801,14 @@
                 <div class="game-stat" style="color: var(--text-secondary);"><i class="fa-solid fa-clock"></i> 14:32:00</div>
                 
                 <div style="margin-left: auto; display: flex; gap: 10px;">
-                    <button class="btn" style="padding: 4px 10px; font-size: 0.9rem;"><i class="fa-solid fa-list-check"></i> Feladatok</button>
-                    <button class="btn" style="padding: 4px 10px; font-size: 0.9rem; background-color: var(--dept-fire);"><i class="fa-solid fa-bars"></i> Menü</button>
+                    <!-- Riasztás Gomb -->
+                    <button class="btn btn-fire" id="btn-open-dispatch" style="padding: 4px 15px; font-size: 0.95rem; border-radius: var(--ui-radius);">
+                        <i class="fa-solid fa-phone-volume"></i> Riasztás
+                    </button>
+                    <!-- Új gombok ID-val -->
+                    <button class="btn" id="btn-open-tasks" style="padding: 4px 10px; font-size: 0.9rem;"><i class="fa-solid fa-list-check"></i> Feladatok</button>
+                    <button class="btn" id="btn-open-game-settings" style="padding: 4px 10px; font-size: 0.9rem;"><i class="fa-solid fa-gear"></i> Beállítások</button>
+                    <button class="btn" id="btn-open-menu" style="padding: 4px 10px; font-size: 0.9rem;"><i class="fa-solid fa-bars"></i> Menü</button>
                 </div>
             </div>
 
@@ -869,6 +898,186 @@
                 </div>
                 
             </div>
+
+            <!-- DISZPÉCSER MODAL (Riasztás menü) -->
+            <div class="game-modal-overlay" id="dispatch-modal">
+                <div class="panel game-modal">
+                    <div class="panel-header" style="justify-content: space-between;">
+                        <div><i class="fa-solid fa-phone-volume"></i> Diszpécserközpont - Riasztás</div>
+                        <button class="btn" id="btn-close-dispatch" style="padding: 2px 8px; font-size: 0.9rem; background: transparent; border: 1px solid var(--border-light);"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="panel-body">
+                        <p style="margin-bottom: 20px; color: var(--text-secondary);">Válassza ki a helyszínre riasztandó járműveket! (A járművek a térkép széléről fognak megérkezni.)</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                            
+                            <!-- Tűzoltóság -->
+                            <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-fire);">
+                                <div class="panel-header" style="background-color: var(--bg-panel-dark); padding: 5px 10px; border-bottom: 1px solid var(--border-panel);"><span class="badge dept-fire">Tűzoltóság</span></div>
+                                <div class="panel-body" style="display: flex; flex-direction: column; gap: 5px; padding: 10px;">
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-truck"></i> Fecskendő (TLF)</span>
+                                        <button class="btn btn-fire" style="padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-truck-ramp-box"></i> Tolólétra (DLK)</span>
+                                        <button class="btn btn-fire" style="padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-car"></i> Parancsnok (ELW)</span>
+                                        <button class="btn btn-fire" style="padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rendőrség -->
+                            <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-police);">
+                                <div class="panel-header" style="background-color: var(--bg-panel-dark); padding: 5px 10px; border-bottom: 1px solid var(--border-panel);"><span class="badge dept-police">Rendőrség</span></div>
+                                <div class="panel-body" style="display: flex; flex-direction: column; gap: 5px; padding: 10px;">
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-car-side"></i> Járőrautó (STW)</span>
+                                        <button class="btn btn-police" style="padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-van-shuttle"></i> Csapatszállító (MTW)</span>
+                                        <button class="btn btn-police" style="padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mentők -->
+                            <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-ems);">
+                                <div class="panel-header" style="background-color: var(--bg-panel-dark); padding: 5px 10px; border-bottom: 1px solid var(--border-panel);"><span class="badge dept-ems">Mentők</span></div>
+                                <div class="panel-body" style="display: flex; flex-direction: column; gap: 5px; padding: 10px;">
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-truck-medical"></i> Rohammentő (RTW)</span>
+                                        <button class="btn" style="background-color: var(--dept-ems); color: var(--dept-ems-text); padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <div class="menu-item" style="padding: 8px 12px; margin: 0; display: flex; justify-content: space-between; cursor: default;">
+                                        <span><i class="fa-solid fa-car-side"></i> Orvosi Ügyelet (NEF)</span>
+                                        <button class="btn" style="background-color: var(--dept-ems); color: var(--dept-ems-text); padding: 2px 10px; font-size: 0.8rem;">Hívás <i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FELADATOK MODAL -->
+            <div class="game-modal-overlay" id="tasks-modal">
+                <div class="panel game-modal" style="max-width: 600px;">
+                    <div class="panel-header" style="justify-content: space-between;">
+                        <div><i class="fa-solid fa-list-check"></i> Aktuális Feladatok (Küldetés Célok)</div>
+                        <button class="btn" id="btn-close-tasks" style="padding: 2px 8px; font-size: 0.9rem; background: transparent; border: 1px solid var(--border-light);"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="panel-body" style="display: flex; flex-direction: column; gap: 15px;">
+                        
+                        <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-fire);">
+                            <div class="panel-body" style="padding: 10px; display: flex; align-items: flex-start; gap: 15px;">
+                                <label class="custom-checkbox" style="margin-top: 2px;">
+                                    <input type="checkbox">
+                                    <div class="checkmark"></div>
+                                </label>
+                                <div>
+                                    <h3 style="font-family: var(--font-heading); color: var(--text-primary); margin-bottom: 5px;">Tűz megfékezése</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Otsd el a lángokat a belvárosi kereszteződésben található személygépjárműnél. Kerüld el a tűz továbbterjedését az épületekre!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-ems);">
+                            <div class="panel-body" style="padding: 10px; display: flex; align-items: flex-start; gap: 15px;">
+                                <label class="custom-checkbox" style="margin-top: 2px;">
+                                    <input type="checkbox">
+                                    <div class="checkmark"></div>
+                                </label>
+                                <div>
+                                    <h3 style="font-family: var(--font-heading); color: var(--text-primary); margin-bottom: 5px;">Sérültek ellátása (0/2)</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Lásd el a helyszínen lévő sérülteket és szállítsd őket a legközelebbi kórházba.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel" style="margin-bottom: 0; border-left: 5px solid var(--dept-police); opacity: 0.5;">
+                            <div class="panel-body" style="padding: 10px; display: flex; align-items: flex-start; gap: 15px;">
+                                <label class="custom-checkbox" style="margin-top: 2px;">
+                                    <input type="checkbox" checked disabled>
+                                    <div class="checkmark"></div>
+                                </label>
+                                <div>
+                                    <h3 style="font-family: var(--font-heading); color: var(--text-primary); margin-bottom: 5px; text-decoration: line-through;">Terület lezárása</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Állíts fel kordont a forgalom elterelésére.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- BEÁLLÍTÁSOK MODAL (Játékon belül) -->
+            <div class="game-modal-overlay" id="game-settings-modal">
+                <div class="panel game-modal" style="max-width: 500px;">
+                    <div class="panel-header" style="justify-content: space-between;">
+                        <div><i class="fa-solid fa-gear"></i> Játék Beállítások</div>
+                        <button class="btn" id="btn-close-game-settings" style="padding: 2px 8px; font-size: 0.9rem; background: transparent; border: 1px solid var(--border-light);"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="panel-body">
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-family: var(--font-heading); font-weight: 700;">
+                                <span>Fő hangerő</span>
+                                <span>80%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="80" class="tactical-slider">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-family: var(--font-heading); font-weight: 700;">
+                                <span>Effektek hangerő (Rádió, Sziréna)</span>
+                                <span>65%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="65" class="tactical-slider">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display:block; margin-bottom: 5px; font-family: var(--font-heading); font-weight: 700;">Grafikai minőség:</label>
+                            <select class="input-field select-field" style="width: 100%; max-width: none;">
+                                <option>Alacsony</option>
+                                <option>Közepes</option>
+                                <option selected>Magas</option>
+                                <option>Ultra</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="toggle-container">
+                                <input type="checkbox" class="toggle-input" checked>
+                                <div class="toggle-box"><div class="toggle-thumb"></div></div>
+                                <span class="toggle-label">Egység útvonalkeresés megjelenítése</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RENDSZER MENÜ MODAL (Szünet menü) -->
+            <div class="game-modal-overlay" id="game-menu-modal">
+                <div class="panel game-modal" style="max-width: 300px; box-shadow: 0 15px 40px rgba(0,0,0,0.9);">
+                    <div class="panel-header" style="justify-content: space-between; background-color: var(--bg-header);">
+                        <div><i class="fa-solid fa-bars"></i> Rendszer Menü</div>
+                        <button class="btn" id="btn-close-menu" style="padding: 2px 8px; font-size: 0.9rem; background: transparent; border: 1px solid var(--border-light);"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="panel-body" style="display: flex; flex-direction: column; gap: 12px; text-align: center;">
+                        <button class="btn" style="width: 100%; justify-content: flex-start; padding-left: 20px;"><i class="fa-solid fa-play" style="width: 25px;"></i> Folytatás</button>
+                        <hr style="border: none; border-top: 1px solid var(--border-panel); margin: 5px 0;">
+                        <button class="btn" style="width: 100%; justify-content: flex-start; padding-left: 20px;"><i class="fa-solid fa-floppy-disk" style="width: 25px;"></i> Játék Mentése</button>
+                        <button class="btn" style="width: 100%; justify-content: flex-start; padding-left: 20px;"><i class="fa-solid fa-folder-open" style="width: 25px;"></i> Betöltés</button>
+                        <hr style="border: none; border-top: 1px solid var(--border-panel); margin: 5px 0;">
+                        <button class="btn" style="width: 100%; justify-content: flex-start; padding-left: 20px;"><i class="fa-solid fa-house" style="width: 25px;"></i> Vissza a Főmenübe</button>
+                        <button class="btn btn-fire" style="width: 100%; justify-content: flex-start; padding-left: 20px;"><i class="fa-solid fa-right-from-bracket" style="width: 25px;"></i> Kilépés a Windowsba</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div id="dashboard" class="tab-content">
@@ -1873,6 +2082,37 @@ public partial class TacticalToggle : CheckButton
         function toggleDdCheck(element) {
             element.classList.toggle('checked');
         }
+        
+        // --- 7. Modális Ablakok Logikája (Játék nézet) ---
+        // Általános függvény a modális ablakok kezelésére
+        function setupModal(openBtnId, closeBtnId, modalId) {
+            const openBtn = document.getElementById(openBtnId);
+            const closeBtn = document.getElementById(closeBtnId);
+            const modal = document.getElementById(modalId);
+
+            if (openBtn && closeBtn && modal) {
+                openBtn.addEventListener('click', () => {
+                    modal.classList.add('show');
+                });
+                
+                closeBtn.addEventListener('click', () => {
+                    modal.classList.remove('show');
+                });
+                
+                // Bezárás, ha a sötétített háttérre kattintunk
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            }
+        }
+
+        // Inicializáljuk a 4 darab modális ablakot
+        setupModal('btn-open-dispatch', 'btn-close-dispatch', 'dispatch-modal');
+        setupModal('btn-open-tasks', 'btn-close-tasks', 'tasks-modal');
+        setupModal('btn-open-game-settings', 'btn-close-game-settings', 'game-settings-modal');
+        setupModal('btn-open-menu', 'btn-close-menu', 'game-menu-modal');
 
         // Inicializálás: Biztosítjuk, hogy a beállítások fül látszódjon induláskor,
         // mivel az van active-ra állítva a HTML menüben.
