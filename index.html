@@ -650,6 +650,104 @@
         }
         .dd-item.has-submenu:hover { background-color: rgba(255, 255, 255, 0.1); }
         .dd-item.has-submenu:hover .dd-submenu { display: block; animation: fadeIn 0.15s ease-in; }
+        
+        /* --- JÁTÉK (RTS HUD) CSS --- */
+        #game.tab-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 0; margin: 0; overflow: hidden; background: #000; z-index: 20; }
+        #game.tab-content.active { display: flex; flex-direction: column; }
+        
+        .game-topbar {
+            height: 40px; background-color: var(--bg-panel-dark); border-bottom: 2px solid var(--border-panel);
+            display: flex; align-items: center; padding: 0 15px; gap: 25px; font-family: var(--font-heading); font-weight: 700;
+        }
+        .game-stat { display: flex; align-items: center; gap: 8px; color: var(--text-primary); }
+        .game-stat i { color: var(--selection); }
+        
+        .game-world {
+            flex: 1; position: relative;
+            background-color: var(--bg-hud);
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .game-world-text { font-family: var(--font-heading); font-size: 2rem; color: rgba(255,255,255,0.2); font-weight: 700; text-transform: uppercase; }
+        
+        .game-hud {
+            position: absolute; bottom: 0; left: 0; right: 0; /* Átfedés a játéktéren */
+            display: flex; justify-content: space-between; align-items: flex-end; 
+            padding: 20px; pointer-events: none; z-index: 10;
+        }
+
+        /* Közös HUD panel stílus a keretekhez (Minimap és Jobb oldali panel) */
+        .hud-panel {
+            background-color: var(--bg-panel-dark);
+            padding: 12px;
+            border: 2px solid var(--border-panel);
+            border-radius: var(--ui-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            pointer-events: auto;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .game-minimap-box {
+            width: 180px; height: 180px; /* Egyezik a game-unit-info magasságával */
+            background: #0a0a0a; border: 2px solid var(--border-panel); border-radius: var(--ui-radius);
+            position: relative; overflow: hidden; flex-shrink: 0;
+        }
+        .game-minimap-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, #293822 0%, #0d120a 100%);
+        }
+        
+        .game-unit-info {
+            display: flex; flex-direction: column; gap: 8px; width: 250px; height: 180px; background: var(--bg-panel); border: 1px solid var(--border-panel); border-radius: var(--ui-radius); padding: 10px; flex-shrink: 0;
+        }
+        .game-portrait {
+            flex: 1; background: var(--bg-panel-dark); border: 1px solid var(--border-light); border-radius: var(--ui-radius);
+            display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--text-secondary); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        /* Függőleges Progress Bar CSS */
+        .vertical-progress-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%;
+        }
+        .vertical-progress-container {
+            width: 14px; flex: 1; margin-top: 4px;
+            background-color: var(--bg-hud); 
+            border: 1px solid var(--border-light); 
+            border-radius: var(--ui-radius); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); 
+            position: relative; overflow: hidden;
+            display: flex; align-items: flex-end; /* A kitöltés alulról induljon */
+        }
+        .vertical-progress-bar {
+            width: 100%; 
+            border-top: 1px solid rgba(255,255,255,0.3);
+            border-right: 1px solid rgba(255,255,255,0.3);
+            transition: height 0.3s ease; 
+        }
+        .vertical-progress-bar.bg-fire { background-color: var(--dept-fire); }
+        .vertical-progress-bar.bg-police { background-color: var(--dept-police); }
+        .vertical-progress-bar.bg-ems { background-color: var(--dept-ems); }
+        
+        .game-action-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4px; width: 220px; flex-shrink: 0;
+        }
+        .action-btn {
+            background-color: var(--btn-main); border: 1px solid var(--border-panel);
+            border-top: 1px solid var(--btn-border-light); border-bottom: var(--btn-bottom-width) solid var(--btn-border-dark);
+            border-radius: var(--ui-radius); color: #fff; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            font-size: 1.1rem; transition: all 0.1s;
+        }
+        .action-btn:hover { background-color: var(--btn-hover); box-shadow: var(--glow-hover); }
+        .action-btn:active {
+            border-bottom: 1px solid var(--btn-border-dark); border-top: var(--btn-bottom-width) solid var(--border-panel);
+            background-color: var(--btn-pressed); transform: translateY(calc(var(--btn-bottom-width) - 1px));
+        }
+        .action-btn.empty { background: transparent; border: 1px dashed var(--border-light); opacity: 0.3; box-shadow: none; cursor: default; }
+        .action-btn.empty:active { transform: none; border-bottom: 1px dashed var(--border-light); border-top: 1px dashed var(--border-light); background: transparent; }
     </style>
 </head>
 <body data-theme="classic">
@@ -657,6 +755,7 @@
     <nav class="sidebar">
         <div class="sidebar-header">Központ</div>
         <ul class="menu-list">
+            <li class="menu-item" data-target="game"><i class="fa-solid fa-gamepad"></i> Játék</li>
             <li class="menu-item" data-target="dashboard"><i class="fa-solid fa-satellite-dish"></i> Áttekintés</li>
             <li class="menu-item" data-target="incidents"><i class="fa-solid fa-triangle-exclamation"></i> Események</li>
             <li class="menu-item" data-target="lobby"><i class="fa-solid fa-users"></i> Lobby</li>
@@ -669,6 +768,109 @@
 
     <main class="main-content">
         
+        <!-- ÚJ TAB: TELJES KÉPERNYŐS JÁTÉKTÉR -->
+        <div id="game" class="tab-content">
+            
+            <!-- FELSŐ ÁLLAPOTSÁV -->
+            <div class="game-topbar">
+                <div class="game-stat"><i class="fa-solid fa-coins"></i> 125,000 $</div>
+                <div class="game-stat" style="color: var(--dept-ems);"><i class="fa-solid fa-heart-pulse"></i> Áldozatok: 0/5</div>
+                <div class="game-stat" style="color: var(--text-secondary);"><i class="fa-solid fa-clock"></i> 14:32:00</div>
+                
+                <div style="margin-left: auto; display: flex; gap: 10px;">
+                    <button class="btn" style="padding: 4px 10px; font-size: 0.9rem;"><i class="fa-solid fa-list-check"></i> Feladatok</button>
+                    <button class="btn" style="padding: 4px 10px; font-size: 0.9rem; background-color: var(--dept-fire);"><i class="fa-solid fa-bars"></i> Menü</button>
+                </div>
+            </div>
+
+            <!-- FŐ JÁTÉK 3D VILÁG (Helyőrző) -->
+            <div class="game-world">
+                <div class="game-world-text">[ 3D Játéktér Helye ]</div>
+                
+                <!-- Mockup egységek a térképen -->
+                <div style="position: absolute; top: 40%; left: 45%; color: var(--dept-fire); font-size: 3rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));"><i class="fa-solid fa-fire"></i></div>
+                <div style="position: absolute; top: 45%; left: 55%; color: var(--dept-police-light); font-size: 2rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.8));"><i class="fa-solid fa-car-side"></i></div>
+                
+                <!-- Kijelölő karika -->
+                <div style="position: absolute; top: 58%; left: 42%; width: 60px; height: 30px; border: 2px solid var(--dept-fire); border-radius: 50%; transform: rotateX(60deg);"></div>
+                <div style="position: absolute; top: 50%; left: 42%; color: var(--dept-fire-light); font-size: 2rem;"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            </div>
+
+            <!-- ALSÓ HUD / VEZÉRLŐPULT (Középen átlátszó, széleken a panelek) -->
+            <div class="game-hud">
+                
+                <!-- 1. Minimap (Bal alsó sarok, HUD keretbe foglalva) -->
+                <div class="hud-panel">
+                    <div class="game-minimap-box">
+                        <div class="game-minimap-bg"></div>
+                        <!-- Pöttyök a térképen -->
+                        <div style="position: absolute; top: 40%; left: 45%; width: 8px; height: 8px; background: var(--dept-fire-light); border-radius: 50%; box-shadow: 0 0 5px var(--dept-fire-light);"></div>
+                        <div style="position: absolute; top: 45%; left: 55%; width: 5px; height: 5px; background: var(--dept-police-light); border-radius: 50%;"></div>
+                        <!-- Kamera nézet doboza -->
+                        <div style="position: absolute; top: 30%; left: 35%; width: 60px; height: 40px; border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 10px rgba(255,255,255,0.2) inset;"></div>
+                    </div>
+                </div>
+
+                <!-- Jobb oldali blokk (Action grid + Unit Info külön HUD panelben) -->
+                <div class="hud-panel" style="margin-left: auto;">
+                    
+                    <!-- 2. Command Interface (RTS Grid 3x5) - Az állapottól balra -->
+                    <div class="game-action-grid">
+                        <button class="action-btn" title="Mozgás / Támadás"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
+                        <button class="action-btn" title="Stop"><i class="fa-solid fa-hand"></i></button>
+                        <button class="action-btn" title="Vízcsatlakozás"><i class="fa-solid fa-water"></i></button>
+                        <button class="action-btn" title="Oltás"><i class="fa-solid fa-fire-extinguisher"></i></button>
+                        <button class="action-btn empty"></button>
+                        
+                        <button class="action-btn" title="Felszerelés"><i class="fa-solid fa-toolbox"></i></button>
+                        <button class="action-btn" title="Műszaki mentés"><i class="fa-solid fa-hammer"></i></button>
+                        <button class="action-btn empty"></button>
+                        <button class="action-btn empty"></button>
+                        <button class="action-btn empty"></button>
+
+                        <button class="action-btn" title="Vissza a bázisra"><i class="fa-solid fa-house-chimney"></i></button>
+                        <button class="action-btn empty"></button>
+                        <button class="action-btn empty"></button>
+                        <button class="action-btn empty"></button>
+                        <button class="action-btn empty"></button>
+                    </div>
+
+                    <!-- 3. Kijelölt Egység Infó - Jobb oldalt -->
+                    <div class="game-unit-info">
+                        <!-- Szöveg / Cím legfelül -->
+                        <div style="font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-panel); padding-bottom: 2px;">TLF 4000 (Pumper)</div>
+                        
+                        <!-- Alsó sor: Kép (bal) + Függőleges csíkok (jobb) -->
+                        <div style="display: flex; gap: 15px; flex: 1; height: 100%;">
+                            <div class="game-portrait">
+                                <i class="fa-solid fa-truck-ramp-box" style="color: var(--dept-fire-light);"></i>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; align-items: flex-end; padding-bottom: 2px;">
+                                <!-- HP Csík -->
+                                <div class="vertical-progress-wrapper" title="Szerkezet (HP: 85%)">
+                                    <div style="font-size: 0.65rem; color: var(--text-secondary); font-weight: bold;">HP</div>
+                                    <div class="vertical-progress-container">
+                                        <div class="vertical-progress-bar bg-ems" style="height: 85%;"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Víz Csík -->
+                                <div class="vertical-progress-wrapper" title="Víztartály (60%)">
+                                    <div style="font-size: 0.7rem; color: var(--dept-police-light);"><i class="fa-solid fa-droplet"></i></div>
+                                    <div class="vertical-progress-container">
+                                        <div class="vertical-progress-bar bg-police" style="height: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+
         <div id="dashboard" class="tab-content">
             <h1>HQ Áttekintés</h1>
             <div class="panel">
